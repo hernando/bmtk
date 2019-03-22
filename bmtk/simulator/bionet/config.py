@@ -25,9 +25,6 @@ import json
 
 from neuron import h
 
-#import bmtk.simulator.utils.config as msdk_config
-#from bmtk.utils.sonata.config import SonataConfig
-#from bmtk.simulator.core.config import ConfigDict
 from bmtk.simulator.utils.config import ConfigDict
 from bmtk.simulator.utils.sim_validator import SimConfigValidator
 from bmtk.simulator.bionet.io_tools import io
@@ -53,13 +50,11 @@ file_formats = [
 # Create a config and input file validator for Bionet
 with open(config_schema_file, 'r') as f:
     config_schema = json.load(f)
-bionet_validator = SimConfigValidator(config_schema, file_formats=file_formats)
-
 
 class Config(ConfigDict):
     @staticmethod
     def get_validator():
-        return bionet_validator
+        return SimConfigValidator(config_schema, file_formats=file_formats)
 
     def create_output_dir(self):
         io.setup_output_dir(self.output_dir, self.log_file)

@@ -13,6 +13,7 @@ net.add_nodes(N=2,  # specifiy the number of cells belong to said group.
               tuning_angle=[0.0, 25.0],                 #  values to each individual cell
               rotation_angle_yaxis=[3.55501, 3.81531],
               rotation_angle_zaxis=-3.646878266, # Note that the y-axis rotation is differnt for each cell (ie. given a list of size N), but with z-axis rotation all cells have the same value
+              orientation=[[0, 0, 0, 0], [1, 1, 1, 1]],
               model_type='biophysical',  # The type of cell we are using
               model_template='ctdb:Biophys1.hoc',  # Tells the simulator that when building cells models use a hoc_template specially created for parsing Allen Cell-types file models. Value would be different if we were using NeuronML or different model files
               model_processing='aibs_perisomatic',  # further instructions for how to processes a cell model. In this case aibs_perisomatic is a built-in directive to cut the axon in a specific way

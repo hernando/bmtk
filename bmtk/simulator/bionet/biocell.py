@@ -92,12 +92,12 @@ class BioCell(Cell):
         RotX = utils.rotation_matrix([1, 0, 0], phi_x)
         RotY = utils.rotation_matrix([0, 1, 0], phi_y)  # rotate segments around yaxis normal to pia
         RotZ = utils.rotation_matrix([0, 0, 1], -phi_z)  # rotate segments around zaxis to get a proper orientation
-        RotXYZ = np.dot(RotX, RotY.dot(RotZ))
+        rotation = np.dot(RotX, RotY.dot(RotZ))
 
         # rotated coordinates around z axis first then shift relative to the soma
-        self._seg_coords['p0'] = self._pos_soma + np.dot(RotXYZ, morph_seg_coords['p0'])
-        self._seg_coords['p1'] = self._pos_soma + np.dot(RotXYZ, morph_seg_coords['p1'])
-        self._seg_coords['p05'] = self._pos_soma + np.dot(RotXYZ, morph_seg_coords['p05'])
+        self._seg_coords['p0'] = self._pos_soma + np.dot(rotation, morph_seg_coords['p0'])
+        self._seg_coords['p1'] = self._pos_soma + np.dot(rotation, morph_seg_coords['p1'])
+        self._seg_coords['p05'] = self._pos_soma + np.dot(rotation, morph_seg_coords['p05'])
 
     def get_seg_coords(self):
         return self._seg_coords

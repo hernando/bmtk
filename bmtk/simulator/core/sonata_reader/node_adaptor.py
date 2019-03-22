@@ -6,6 +6,7 @@ import numpy as np
 
 class SonataBaseNode(object):
     def __init__(self, node, prop_adaptor):
+        print(node)
         self._node = node
         self._prop_adaptor = prop_adaptor
 

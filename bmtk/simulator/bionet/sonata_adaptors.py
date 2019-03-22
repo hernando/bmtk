@@ -33,21 +33,12 @@ class BioNode(SonataBaseNode):
         return self._prop_adaptor.position(self._node)
 
     @property
+    def orientation(self):
+        return self._prop_adaptor.orientation(self._node)
+
+    @property
     def morphology_file(self):
         return self._node['morphology']
-
-    @property
-    def rotation_angle_xaxis(self):
-        return self._prop_adaptor.rotation_angle_xaxis(self._node)
-
-    @property
-    def rotation_angle_yaxis(self):
-        # TODO: Combine rotation alnges into a single property
-        return self._prop_adaptor.rotation_angle_yaxis(self._node)
-
-    @property
-    def rotation_angle_zaxis(self):
-        return self._prop_adaptor.rotation_angle_zaxis(self._node)
 
     @property
     def rotations(self):
@@ -84,6 +75,47 @@ class BioNodeAdaptor(NodeAdaptor):
     def patch_adaptor(cls, adaptor, node_group, network):
         node_adaptor = NodeAdaptor.patch_adaptor(adaptor, node_group, network)
 
+        def positions_default(self, node):
+            return np.array([0.0, 0.0, 0.0])
+
+        def positions(self, node):
+            return node['positions']
+
+        def position(self, node):
+            return node['position']
+
+        def rotation(self, node):
+            print('HOLA')
+            return node['orientation']
+
+        def orientation_default(self, node):
+            # Double check if this is the identity quaternion
+            return np.array([1.0, 0.0, 0.0, 0.0])
+
+        def orientation_from_euler_angles(self, node):
+            return np.array([1.0, 0.0, 0.0, 0.0])
+
+        def rotation_angle_default(self, node):
+            return 0.0
+
+        def rotation_angle_x(self, node):
+            return node['rotation_angle_xaxis']
+
+        def rotation_angle_y(self, node):
+            return node['rotation_angle_yaxis']
+
+        def rotation_angle_z(self, node):
+            return node['rotation_angle_zaxis']
+
+        def position_xyz(self, node):
+            return np.array([node['x'], node['y'], node['z']])
+
+        def position_xy(self, node):
+            return np.array([node['x'], node['y'], 0.0])
+
+        def position_x(self, node):
+            return np.array([node['x'], 0.0, 0.0])
+
         # Position
         if 'positions' in node_group.all_columns:
             node_adaptor.position = types.MethodType(positions, adaptor)
@@ -100,6 +132,17 @@ class BioNodeAdaptor(NodeAdaptor):
             node_adaptor.position = types.MethodType(positions_default, adaptor)
 
         # Rotation angles
+        if 'orientation' in node_group.all_columns:
+            node_adaptor.orientation = types.MethodType(orientation, node_adaptor)
+        elif ('rotation_angle_xaxis' in node_group.all_columns or
+              'rotation_angle_yaxis' in node_group.all_columns or
+              'rotation_angle_zaxis' in node_group.all_columns):
+            node_adaptor.orientation = types.MethodType(
+                orientation_from_euler_angles, node_adaptor)
+        else:
+            node_adaptor.orientation = types.MethodType(
+                orientation_default, node_adaptor)
+
         if 'rotation_angle_xaxis' in node_group.all_columns:
             node_adaptor.rotation_angle_xaxis = types.MethodType(rotation_angle_x, node_adaptor)
         else:
@@ -115,56 +158,13 @@ class BioNodeAdaptor(NodeAdaptor):
         else:
             node_adaptor.rotation_angle_zaxis = types.MethodType(rotation_angle_default, node_adaptor)
 
+        # ???
         if 'rotations' in node_group.all_columns:
             node_adaptor.rotations = types.MethodType(rotations, node_adaptor)
         else:
             node_adaptor.rotations = types.MethodType(value_none, node_adaptor)
 
         return node_adaptor
-
-
-def rotations(self, node):
-    return node['rotations']
-
-def value_none(self, node):
-    return None
-
-def positions_default(self, node):
-    return np.array([0.0, 0.0, 0.0])
-
-
-def positions(self, node):
-    return node['positions']
-
-
-def position(self, node):
-    return node['position']
-
-
-def rotation_angle_default(self, node):
-    return 0.0
-
-
-def rotation_angle_x(self, node):
-    return node['rotation_angle_xaxis']
-
-
-def rotation_angle_y(self, node):
-    return node['rotation_angle_yaxis']
-
-
-def rotation_angle_z(self, node):
-    return node['rotation_angle_zaxis']
-
-
-def position_xyz(self, node):
-    return np.array([node['x'], node['y'], node['z']])
-
-def position_xy(self, node):
-    return np.array([node['x'], node['y'], 0.0])
-
-def position_x(self, node):
-    return np.array([node['x'], 0.0, 0.0])
 
 class BioEdge(SonataBaseEdge):
     def load_synapses(self, section_x, section_id):

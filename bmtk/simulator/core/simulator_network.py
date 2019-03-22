@@ -81,7 +81,7 @@ class SimNetwork(object):
     def add_nodes(self, node_population):
         pop_name = node_population.name
         if pop_name in self._node_populations:
-            # Make sure their aren't any collisions
+            # Make sure there aren't any collisions
             self.io.log_exception('There are multiple node populations with name {}.'.format(pop_name))
 
         node_population.initialize(self)
